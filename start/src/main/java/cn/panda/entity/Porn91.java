@@ -44,9 +44,6 @@ public class Porn91 implements Serializable {
     private Integer isVideoDownload;
 
     private Integer clickTimes;
-
-    private String img;
-
     private String tags;
 
 

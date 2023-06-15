@@ -28,7 +28,9 @@
                 <a href="${item.pageUrl}" target="_blank">
                     <img src="${item.imgUrl}" class="card-img-top">
                     <div class="card-body">
-                        ${item.title}
+                        ${item.title} <br>
+                        ${item.tags?if_exists} <br>
+                        ${item.id}
                     </div>
                 </a>
             </div>

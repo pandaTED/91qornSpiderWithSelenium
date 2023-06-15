@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -39,11 +41,11 @@ public class IndexController {
 
         if (StringUtils.isNotBlank(keyword)) {
             LambdaQueryWrapper<Porn91> porn91LambdaQueryWrapper = Wrappers.lambdaQuery(Porn91.class);
-            porn91LambdaQueryWrapper
+            porn91LambdaQueryWrapper.select(Porn91::getTitle, Porn91::getImgUrl, Porn91::getTags, Porn91::getPageUrl)
                     .notLike(Porn91::getTitle, "付费")
                     .notLike(Porn91::getTitle, "收费")
                     .notLike(Porn91::getTags, "wenzi")
-                    .and(item -> item.like(Porn91::getTitle, keyword).or().like(Porn91::getTags, keyword))
+                    .and(item -> item.like(Porn91::getTags, keyword).or().like(Porn91::getTitle, keyword))
                     .orderByDesc(Porn91::getId);
 
             list = porn91Service.list(porn91LambdaQueryWrapper);
