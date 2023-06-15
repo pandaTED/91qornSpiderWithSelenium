@@ -2,6 +2,7 @@ package cn.panda.spider.task;
 
 import cn.hutool.core.collection.ConcurrentHashSet;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RuntimeUtil;
 import cn.panda.entity.Porn91;
 import cn.panda.service.IPorn91Service;
 import cn.panda.service.ISpiderHistoryService;
@@ -32,14 +33,14 @@ public class SpiderStartEntry {
     public static volatile Set<String> urlSet = new ConcurrentHashSet<>();
     public static volatile AtomicInteger saveCount = new AtomicInteger(0);
 
-    @Scheduled(initialDelay = 10000, fixedDelay = 3600000)
+//    @Scheduled(initialDelay = 10000, fixedDelay = 3600000)
     public void init() {
 
         String spiderFlag = IdUtil.fastSimpleUUID();
 
         String pageStart = "https://91porn.com/v.php?page=";
 
-        Integer threadSize = 12;
+        Integer threadSize = 8;
 
         ExecutorService executorService = Executors.newFixedThreadPool(threadSize);
 
@@ -48,8 +49,8 @@ public class SpiderStartEntry {
 
         urlSet.addAll(collect);
 
-        for (int y = 0; y < 1; y++) {
-            for (int i = 1; i < 200; i++) {
+        for (int y = 0; y < 2; y++) {
+            for (int i = 400; i < 700; i++) {
                 String str2 = pageStart + i;
                 PageProcessSingle pageProcessSingle = new PageProcessSingle(str2, porn91Service, spiderFlag, spiderHistoryService);
                 executorService.submit(pageProcessSingle);

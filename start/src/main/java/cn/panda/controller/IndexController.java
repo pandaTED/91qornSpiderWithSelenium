@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author zyp
@@ -31,7 +31,7 @@ public class IndexController {
     private IPorn91Service porn91Service;
 
     @RequestMapping("/")
-    public String index(Model model, HttpServletRequest request){
+    public String index(Model model, HttpServletRequest request) {
 
         String keyword = request.getParameter("keyword");
 
@@ -40,9 +40,10 @@ public class IndexController {
         if (StringUtils.isNotBlank(keyword)) {
             LambdaQueryWrapper<Porn91> porn91LambdaQueryWrapper = Wrappers.lambdaQuery(Porn91.class);
             porn91LambdaQueryWrapper
-                    .notLike(Porn91::getTitle,"付费")
-                    .notLike(Porn91::getTitle,"收费")
-                    .like(Porn91::getTitle,keyword)
+                    .notLike(Porn91::getTitle, "付费")
+                    .notLike(Porn91::getTitle, "收费")
+                    .notLike(Porn91::getTags, "wenzi")
+                    .and(item -> item.like(Porn91::getTitle, keyword).or().like(Porn91::getTags, keyword))
                     .orderByDesc(Porn91::getId);
 
             list = porn91Service.list(porn91LambdaQueryWrapper);
