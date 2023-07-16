@@ -33,16 +33,14 @@ public class SpiderStartEntry {
     public static volatile Set<String> urlSet = new ConcurrentHashSet<>();
     public static volatile AtomicInteger saveCount = new AtomicInteger(0);
 
-//    @Scheduled(initialDelay = 10000, fixedDelay = 3600000)
+    @Scheduled(initialDelay = 10000, fixedDelay = 3600000)
     public void init() {
 
         String spiderFlag = IdUtil.fastSimpleUUID();
 
         String pageStart = "https://91porn.com/v.php?page=";
 
-        Integer threadSize = 8;
-
-        ExecutorService executorService = Executors.newFixedThreadPool(threadSize);
+        ExecutorService executorService = Executors.newFixedThreadPool(RuntimeUtil.getProcessorCount());
 
         List<Porn91> list = porn91Service.list();
         Set<String> collect = list.stream().map(Porn91::getPageUrl).collect(Collectors.toSet());
@@ -50,7 +48,7 @@ public class SpiderStartEntry {
         urlSet.addAll(collect);
 
         for (int y = 0; y < 2; y++) {
-            for (int i = 400; i < 700; i++) {
+            for (int i = 1; i < 200; i++) {
                 String str2 = pageStart + i;
                 PageProcessSingle pageProcessSingle = new PageProcessSingle(str2, porn91Service, spiderFlag, spiderHistoryService);
                 executorService.submit(pageProcessSingle);
@@ -59,16 +57,31 @@ public class SpiderStartEntry {
 
         executorService.shutdown();
 
+        new Thread(() -> {
+
+            while (true) {
+                try {
+                    TimeUnit.SECONDS.sleep(10);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                log.info("新增数量 :{}", saveCount.get());
+                log.info("新增数量 :{}", saveCount.get());
+                log.info("新增数量 :{}", saveCount.get());
+                log.info("新增数量 :{}", saveCount.get());
+                log.info("新增数量 :{}", saveCount.get());
+
+            }
+        }).start();
+
         try {
-            while (!executorService.awaitTermination(30, TimeUnit.SECONDS)) {
-                log.info("本次新增 ：{}", saveCount.get());
-                log.info("本次新增 ：{}", saveCount.get());
-                log.info("本次新增 ：{}", saveCount.get());
-                log.info("本次新增 ：{}", saveCount.get());
-                log.info("本次新增 ：{}", saveCount.get());
+            if (executorService.awaitTermination(30, TimeUnit.MINUTES)) {
+                log.info("executorService.awaitTermination -- 等待 30 分钟 退出！");
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
     }
 }
